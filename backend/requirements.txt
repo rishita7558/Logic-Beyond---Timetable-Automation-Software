@@ -1,0 +1,9 @@
+django>=4.2,<5.1
+djangorestframework>=3.14
+python-dateutil>=2.9
+google-api-python-client>=2.131
+google-auth>=2.34
+google-auth-oauthlib>=1.2
+reportlab>=4.2
+django-cors-headers>=4.4
+
