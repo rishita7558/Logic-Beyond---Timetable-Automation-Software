@@ -1,7 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .views import ProfessorCSVUpload, TimetableDetailView, GenerateTimetableView
 
 
 router = DefaultRouter()
@@ -27,10 +26,9 @@ urlpatterns = [
     path('', include(router.urls)),
     path('csv/courses/', views.CSVImportViewSet.as_view({'post': 'import_courses'})),
     path('csv/students/', views.CSVImportViewSet.as_view({'post': 'import_students'})),
-    path('csv/professors/', ProfessorCSVUpload.as_view()),
+    path('csv/professors/', views.CSVImportViewSet.as_view({'post': 'import_professors'})),
     path('csv/rooms/', views.CSVImportViewSet.as_view({'post': 'import_rooms'})),
-    path('timetables/<int:pk>/', TimetableDetailView.as_view()),
-    path('timetables/generate/', GenerateTimetableView.as_view()),
+    path('csv/slots/', views.CSVImportViewSet.as_view({'post': 'import_slots'})),
+    path('csv/professor-availability/', views.CSVImportViewSet.as_view({'post': 'import_professor_availability'})),
+    path('csv/room-availability/', views.CSVImportViewSet.as_view({'post': 'import_room_availability'})),
 ]
-
-

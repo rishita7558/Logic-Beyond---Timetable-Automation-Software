@@ -1,12 +1,11 @@
+from io import TextIOWrapper
+import csv
+from django.db import transaction
+from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db import transaction
-from django.utils import timezone
-import csv
-from io import TextIOWrapper
-
-from django.http import HttpResponse
 
 from . import models, serializers, services, calendar as cal, pdf as pdf_utils
 
@@ -59,8 +58,6 @@ class MessHoursViewSet(viewsets.ModelViewSet):
 class SlotViewSet(viewsets.ModelViewSet):
     queryset = models.Slot.objects.all().order_by("code")
     serializer_class = serializers.SlotSerializer
-
-
 
 
 class ClassSessionViewSet(viewsets.ModelViewSet):
@@ -289,33 +286,62 @@ class CSVImportViewSet(viewsets.ViewSet):
                 created += 1
         return Response({"created": created})
 
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
-class ProfessorCSVUpload(APIView):
-    def post(self, request):
-        file = request.FILES.get('file')
+    @action(detail=False, methods=["post"], url_path="slots")
+    def import_slots(self, request):
+        file = request.FILES.get("file")
         if not file:
-            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
-        # TODO: process the file here
-        return Response({'created': 10}, status=status.HTTP_201_CREATED)
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        reader = csv.DictReader(TextIOWrapper(file, encoding="utf-8"))
+        created = 0
+        with transaction.atomic():
+            for row in reader:
+                models.Slot.objects.update_or_create(
+                    code=row.get("code"),
+                    defaults={
+                        "day_of_week": int(row.get("day_of_week")),
+                        "start_time": row.get("start_time"),
+                        "end_time": row.get("end_time"),
+                    },
+                )
+                created += 1
+        return Response({"created": created})
 
+    @action(detail=False, methods=["post"], url_path="professor-availability")
+    def import_professor_availability(self, request):
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        reader = csv.DictReader(TextIOWrapper(file, encoding="utf-8"))
+        created = 0
+        with transaction.atomic():
+            for row in reader:
+                professor = models.Professor.objects.get(email=row.get("professor_email"))
+                models.ProfessorAvailability.objects.update_or_create(
+                    professor=professor,
+                    day_of_week=int(row.get("day_of_week")),
+                    start_time=row.get("start_time"),
+                    end_time=row.get("end_time"),
+                )
+                created += 1
+        return Response({"created": created})
 
-from rest_framework import generics
-from .models import Timetable
-from .serializers import TimetableSerializer
-
-class TimetableDetailView(generics.DestroyAPIView):
-    queryset = Timetable.objects.all()
-    serializer_class = TimetableSerializer
-
-
-class GenerateTimetableView(APIView):
-    def post(self, request):
-        # Your timetable generation logic here
-        # Should create Timetable objects in the database
-        return Response({'success': True}, status=status.HTTP_201_CREATED)
-
-
+    @action(detail=False, methods=["post"], url_path="room-availability")
+    def import_room_availability(self, request):
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"detail": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        reader = csv.DictReader(TextIOWrapper(file, encoding="utf-8"))
+        created = 0
+        with transaction.atomic():
+            for row in reader:
+                room = models.Room.objects.get(code=row.get("room_code"))
+                models.RoomAvailability.objects.update_or_create(
+                    room=room,
+                    day_of_week=int(row.get("day_of_week")),
+                    defaults={
+                        "start_time": row.get("start_time"),
+                        "end_time": row.get("end_time"),
+                    },
+                )
+                created += 1
+        return Response({"created": created})

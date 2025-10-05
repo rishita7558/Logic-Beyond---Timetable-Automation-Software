@@ -15,15 +15,12 @@ import {
   Spin,
   Row,
   Col,
-  Divider,
   Tabs,
   Statistic,
-  Progress,
   Tooltip,
   Popconfirm,
   Badge,
-  List,
-  Descriptions
+  List
 } from 'antd'
 import { 
   PlusOutlined, 
@@ -31,13 +28,10 @@ import {
   SyncOutlined, 
   CalendarOutlined,
   EyeOutlined,
-  EditOutlined,
   DeleteOutlined,
   DownloadOutlined,
   WarningOutlined,
   CheckCircleOutlined,
-  BarChartOutlined,
-  SettingOutlined,
   ClearOutlined
 } from '@ant-design/icons'
 import { 
@@ -46,7 +40,6 @@ import {
   rescheduleTimetable, 
   syncCalendar,
   getTimetableData,
-  getTimetableSections,
   checkTimetableConflicts,
   optimizeTimetable,
   exportTimetablePDF,
@@ -57,7 +50,6 @@ import {
 } from '../services/api'
 
 const { Title, Text } = Typography
-const { Option } = Select
 const { TabPane } = Tabs
 
 interface TimetableData {
@@ -88,9 +80,16 @@ interface Conflict {
   break_time?: string
 }
 
+interface Timetable {
+  id: number
+  name: string
+  created_at: string
+  sessions?: any[]
+}
+
 const TimetablePage: React.FC = () => {
   const [form] = Form.useForm()
-  const [timetables, setTimetables] = useState<any[]>([])
+  const [timetables, setTimetables] = useState<Timetable[]>([])
   const [loading, setLoading] = useState(false)
   const [timetableData, setTimetableData] = useState<TimetableData>({})
   const [selectedTimetable, setSelectedTimetable] = useState<number | null>(null)
@@ -274,16 +273,6 @@ const TimetablePage: React.FC = () => {
     }
   };
 
-  const handleGenerateTimetable = async () => {
-    try {
-      await generateTimetable();
-      await fetchTimetables();
-      message.success('Timetable generated!');
-    } catch (error) {
-      message.error('Failed to generate timetable');
-    }
-  };
-
   const timetableColumns = [
     {
       title: 'Name',
@@ -299,7 +288,7 @@ const TimetablePage: React.FC = () => {
     {
       title: 'Status',
       key: 'status',
-      render: (record: any) => {
+      render: (record: Timetable) => {
         const sessionCount = record.sessions?.length || 0
         if (sessionCount > 0) {
           return <Tag color="green">Generated ({sessionCount} sessions)</Tag>
@@ -311,7 +300,7 @@ const TimetablePage: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (record: any) => (
+      render: (record: Timetable) => (
         <Space>
           <Tooltip title="View Timetable">
             <Button 
@@ -420,10 +409,10 @@ const TimetablePage: React.FC = () => {
                   </td>
                   {days.map((day, dayIndex) => {
                     const dayData = timetableData[section]?.[dayIndex] || []
-                    const session = dayData.find(s => 
-                      `${s.start_time}-${s.end_time}` === timeSlot ||
-                      (s.start_time <= timeSlot.split('-')[0] && s.end_time > timeSlot.split('-')[0])
-                    )
+                    const session = dayData.find(s => {
+                      const [startTime, endTime] = timeSlot.split('-')
+                      return s.start_time === startTime && s.end_time === endTime
+                    })
                     
                     return (
                       <td key={day} style={{ border: '1px solid #d9d9d9', padding: '4px', height: '60px' }}>
