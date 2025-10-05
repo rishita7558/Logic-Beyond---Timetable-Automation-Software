@@ -31,7 +31,7 @@ const UploadPage: React.FC = () => {
     customRequest: async ({ file, onSuccess, onError }: any) => {
       try {
         setUploading(type)
-        const response = await uploadCSV(endpoint, file as File)
+        const response = await uploadCSV('/csv/professors/', file as File)
         const count = response.data.created || 0
         
         setUploadStatus(prev => ({

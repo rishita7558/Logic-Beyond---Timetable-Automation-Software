@@ -290,3 +290,32 @@ class CSVImportViewSet(viewsets.ViewSet):
         return Response({"created": created})
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class ProfessorCSVUpload(APIView):
+    def post(self, request):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+        # TODO: process the file here
+        return Response({'created': 10}, status=status.HTTP_201_CREATED)
+
+
+from rest_framework import generics
+from .models import Timetable
+from .serializers import TimetableSerializer
+
+class TimetableDetailView(generics.DestroyAPIView):
+    queryset = Timetable.objects.all()
+    serializer_class = TimetableSerializer
+
+
+class GenerateTimetableView(APIView):
+    def post(self, request):
+        # Your timetable generation logic here
+        # Should create Timetable objects in the database
+        return Response({'success': True}, status=status.HTTP_201_CREATED)
+
+

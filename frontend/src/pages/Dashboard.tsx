@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Row, Col, Statistic, Typography, Button, Space, Progress, Alert } from 'antd'
+import { Card, Row, Col, Statistic, Typography, Button, Space, Progress, Alert, message } from 'antd'
 import { 
   UserOutlined, 
   BookOutlined, 
@@ -10,7 +10,7 @@ import {
   ExclamationCircleOutlined
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
-import { api } from '../services/api'
+import { api, generateTimetable, fetchTimetables } from '../services/api'
 
 const { Title, Text } = Typography
 
@@ -24,10 +24,12 @@ const Dashboard: React.FC = () => {
     exams: 0
   })
   const [loading, setLoading] = useState(true)
+  const [timetables, setTimetables] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
     fetchStats()
+    fetchTimetables().then(res => setTimetables(res.data));
   }, [])
 
   const fetchStats = async () => {
@@ -69,6 +71,17 @@ const Dashboard: React.FC = () => {
   }
 
   const completionPercentage = getCompletionPercentage()
+
+  const handleGenerateTimetable = async () => {
+    try {
+      await generateTimetable();
+      const response = await fetchTimetables();
+      setTimetables(response.data); // update state with new timetables
+      message.success('Timetable generated!');
+    } catch (error) {
+      message.error('Failed to generate timetable');
+    }
+  };
 
   return (
     <div>
@@ -242,6 +255,10 @@ const Dashboard: React.FC = () => {
           </Card>
         </Col>
       </Row>
+
+      <Button type="primary" onClick={handleGenerateTimetable}>
+        Generate Timetable
+      </Button>
     </div>
   )
 }

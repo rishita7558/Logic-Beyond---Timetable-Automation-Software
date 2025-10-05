@@ -52,7 +52,8 @@ import {
   exportTimetablePDF,
   clearTimetable,
   getTimetableStatistics,
-  api
+  api,
+  deleteTimetable
 } from '../services/api'
 
 const { Title, Text } = Typography
@@ -174,7 +175,7 @@ const TimetablePage: React.FC = () => {
   const generateTimetableForId = async (timetableId: number) => {
     try {
       setGenerating(true)
-      const response = await generateTimetable(timetableId)
+      const response = await generateTimetable()
       message.success(`Timetable generated successfully! Created ${response.data.created_sessions} sessions.`)
       
       if (response.data.conflicts && response.data.conflicts.length > 0) {
@@ -259,6 +260,29 @@ const TimetablePage: React.FC = () => {
     const url = exportTimetablePDF(timetableId)
     window.open(url, '_blank')
   }
+
+  const handleDeleteTimetable = async (id: number) => {
+    try {
+      setLoading(true);
+      await deleteTimetable(id);
+      message.success('Timetable deleted');
+      await fetchTimetables();
+    } catch (error) {
+      message.error('Failed to delete timetable');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateTimetable = async () => {
+    try {
+      await generateTimetable();
+      await fetchTimetables();
+      message.success('Timetable generated!');
+    } catch (error) {
+      message.error('Failed to generate timetable');
+    }
+  };
 
   const timetableColumns = [
     {
@@ -350,6 +374,16 @@ const TimetablePage: React.FC = () => {
                 loading={generating}
               />
             </Tooltip>
+          </Popconfirm>
+          <Popconfirm
+            title="Are you sure you want to delete this timetable?"
+            onConfirm={() => handleDeleteTimetable(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button danger icon={<DeleteOutlined />} size="small" loading={loading}>
+              Delete
+            </Button>
           </Popconfirm>
         </Space>
       ),

@@ -32,14 +32,19 @@ api.interceptors.response.use(
   }
 )
 
-export const uploadCSV = (path: string, file: File) => {
-  const form = new FormData()
-  form.append('file', file)
-  return api.post(path, form)
-}
+const BASE_URL = "http://localhost:8000/api"; // or your backend URL
+
+export const uploadCSV = async (endpoint: string, file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return axios.post(`${BASE_URL}${endpoint}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
 
 export const createTimetable = (name: string) => api.post('/timetables/', { name })
-export const generateTimetable = (id: number) => api.post(`/timetables/${id}/generate/`)
+export const generateTimetable = () =>
+  axios.post(`${BASE_URL}/timetables/`);
 export const rescheduleTimetable = (id: number) => api.post(`/timetables/${id}/reschedule/`)
 export const syncCalendar = (id: number) => api.post(`/timetables/${id}/sync-calendar/`)
 export const getTimetableData = (id: number) => api.get(`/timetables/${id}/data/`)
@@ -53,5 +58,9 @@ export const getTimetableStatistics = (id: number) => api.get(`/timetables/${id}
 export const generateExams = () => api.post('/exams/generate/')
 export const generateSeating = (id: number) => api.post(`/exams/${id}/generate-seating/`)
 export const seatingPdfUrl = (id: number) => `/api/exams/${id}/export-seating-pdf/`
+export const deleteTimetable = (id: number) =>
+  axios.delete(`${BASE_URL}/timetables/${id}/`);
+export const fetchTimetables = () =>
+  axios.get(`${BASE_URL}/timetables/`);
 
 
