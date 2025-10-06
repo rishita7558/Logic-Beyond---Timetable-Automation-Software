@@ -35,11 +35,21 @@ import {
 const { Title, Text } = Typography
 const { Option } = Select
 
+interface Exam {
+  id: number
+  course?: { code: string, name: string }
+  date: string
+  start_time: string
+  end_time: string
+  room_allocations?: { capacity_used: number }[]
+  seating_assignments?: any[]
+}
+
 const ExamsPage: React.FC = () => {
-  const [exams, setExams] = useState<any[]>([])
+  const [exams, setExams] = useState<Exam[]>([])
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
-  const [seatingData, setSeatingData] = useState<any>({})
+  const [seatingData, setSeatingData] = useState<any[]>([])
   const [showSeatingModal, setShowSeatingModal] = useState(false)
   const [selectedExam, setSelectedExam] = useState<number | null>(null)
 
@@ -75,7 +85,7 @@ const ExamsPage: React.FC = () => {
   const generateSeatingForExam = async (examId: number) => {
     try {
       setGenerating(true)
-      const response = await generateSeating(examId)
+      const response = await generateSeating()
       message.success(`Generated seating for ${response.data.seated} students`)
       fetchExams()
     } catch (error: any) {
@@ -86,7 +96,7 @@ const ExamsPage: React.FC = () => {
   }
 
   const downloadSeatingPDF = (examId: number) => {
-    const url = seatingPdfUrl(examId)
+    const url = seatingPdfUrl() + `?exam=${examId}`
     window.open(url, '_blank')
   }
 
@@ -105,7 +115,7 @@ const ExamsPage: React.FC = () => {
     {
       title: 'Course',
       key: 'course',
-      render: (record: any) => (
+      render: (_text: any, record: Exam) => (
         <div>
           <Text strong>{record.course?.code}</Text>
           <br />
@@ -122,14 +132,14 @@ const ExamsPage: React.FC = () => {
     {
       title: 'Time',
       key: 'time',
-      render: (record: any) => (
+      render: (_text: any, record: Exam) => (
         <Text>{record.start_time} - {record.end_time}</Text>
       ),
     },
     {
       title: 'Rooms',
       key: 'rooms',
-      render: (record: any) => {
+      render: (_text: any, record: Exam) => {
         const roomCount = record.room_allocations?.length || 0
         return <Tag color="blue">{roomCount} room(s)</Tag>
       },
@@ -137,31 +147,27 @@ const ExamsPage: React.FC = () => {
     {
       title: 'Students',
       key: 'students',
-      render: (record: any) => {
-        const totalCapacity = record.room_allocations?.reduce((sum: number, alloc: any) => sum + alloc.capacity_used, 0) || 0
+      render: (_text: any, record: Exam) => {
+        const totalCapacity = record.room_allocations?.reduce((sum, alloc) => sum + alloc.capacity_used, 0) || 0
         return <Tag color="green">{totalCapacity} students</Tag>
       },
     },
     {
       title: 'Status',
       key: 'status',
-      render: (record: any) => {
+      render: (_text: any, record: Exam) => {
         const seatingCount = record.seating_assignments?.length || 0
-        const totalCapacity = record.room_allocations?.reduce((sum: number, alloc: any) => sum + alloc.capacity_used, 0) || 0
-        
-        if (seatingCount === 0) {
-          return <Tag color="orange">No Seating</Tag>
-        } else if (seatingCount === totalCapacity) {
-          return <Tag color="green">Complete</Tag>
-        } else {
-          return <Tag color="blue">Partial ({seatingCount}/{totalCapacity})</Tag>
-        }
+        const totalCapacity = record.room_allocations?.reduce((sum, alloc) => sum + alloc.capacity_used, 0) || 0
+
+        if (seatingCount === 0) return <Tag color="orange">No Seating</Tag>
+        else if (seatingCount === totalCapacity) return <Tag color="green">Complete</Tag>
+        else return <Tag color="blue">Partial ({seatingCount}/{totalCapacity})</Tag>
       },
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: (record: any) => (
+      render: (_text: any, record: Exam) => (
         <Space>
           <Button 
             icon={<EyeOutlined />} 
@@ -196,28 +202,20 @@ const ExamsPage: React.FC = () => {
       return <Alert message="No seating arrangement available" type="info" />
     }
 
-    // Group seating by room
     const roomsData: { [roomId: number]: any[] } = {}
     seatingData.forEach((assignment: any) => {
       const roomId = assignment.room
-      if (!roomsData[roomId]) {
-        roomsData[roomId] = []
-      }
+      if (!roomsData[roomId]) roomsData[roomId] = []
       roomsData[roomId].push(assignment)
     })
 
     return Object.entries(roomsData).map(([roomId, assignments]) => {
-      // Get room info
       const room = assignments[0]?.room_details
-      const maxRow = Math.max(...assignments.map((a: any) => a.row_index))
-      const maxCol = Math.max(...assignments.map((a: any) => a.col_index))
+      const maxRow = Math.max(...assignments.map(a => a.row_index))
+      const maxCol = Math.max(...assignments.map(a => a.col_index))
 
-      // Create grid
       const grid = Array(maxRow + 1).fill(null).map(() => Array(maxCol + 1).fill(null))
-      
-      assignments.forEach((assignment: any) => {
-        grid[assignment.row_index][assignment.col_index] = assignment
-      })
+      assignments.forEach(a => grid[a.row_index][a.col_index] = a)
 
       return (
         <Card key={roomId} title={`Room: ${room?.code || roomId} (${room?.capacity || 0} capacity)`} style={{ marginBottom: '16px' }}>
@@ -261,10 +259,8 @@ const ExamsPage: React.FC = () => {
   const getStats = () => {
     const totalExams = exams.length
     const totalRooms = exams.reduce((sum, exam) => sum + (exam.room_allocations?.length || 0), 0)
-    const totalStudents = exams.reduce((sum, exam) => 
-      sum + (exam.room_allocations?.reduce((roomSum: number, alloc: any) => roomSum + alloc.capacity_used, 0) || 0), 0)
+    const totalStudents = exams.reduce((sum, exam) => sum + (exam.room_allocations?.reduce((s, alloc) => s + alloc.capacity_used, 0) || 0), 0)
     const totalSeated = exams.reduce((sum, exam) => sum + (exam.seating_assignments?.length || 0), 0)
-
     return { totalExams, totalRooms, totalStudents, totalSeated }
   }
 

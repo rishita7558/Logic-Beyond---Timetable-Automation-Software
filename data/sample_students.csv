@@ -1,21 +1,6 @@
 roll_number,name,program,batch,section
-2024001,Alice Johnson,Computer Science,2024,A
-2024002,Bob Wilson,Computer Science,2024,A
-2024003,Charlie Brown,Computer Science,2024,A
-2024004,Diana Prince,Computer Science,2024,A
-2024005,Eve Smith,Computer Science,2024,A
-2024006,Frank Miller,Computer Science,2024,B
-2024007,Grace Lee,Computer Science,2024,B
-2024008,Henry Davis,Computer Science,2024,B
-2024009,Ivy Chen,Computer Science,2024,B
-2024010,Jack Taylor,Computer Science,2024,B
-2024011,Kate Wilson,Mathematics,2024,A
-2024012,Liam O'Brien,Mathematics,2024,A
-2024013,Maya Patel,Mathematics,2024,A
-2024014,Noah Kumar,Mathematics,2024,A
-2024015,Olive Singh,Mathematics,2024,A
-2024016,Paul Kim,Physics,2024,A
-2024017,Quinn Zhang,Physics,2024,A
-2024018,Rose Garcia,Physics,2024,A
-2024019,Sam Wilson,Physics,2024,A
-2024020,Tina Lopez,Physics,2024,A
+24BCS001,Anil Kumar,Computer Science,Batch A1,CSE-A
+24BCS005,Priya Sharma,Computer Science,Batch A1,CSE-A
+24BCS043,Rohan Gupta,Computer Science,Batch A2,CSE-B
+24BCS085,Neha Reddy,Computer Science,Batch B1,CSE-C
+24BCS126,Vikas Singh,Computer Science,Batch B2,CSE-D

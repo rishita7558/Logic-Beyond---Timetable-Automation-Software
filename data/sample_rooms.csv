@@ -1,15 +1,11 @@
 code,name,building,capacity,room_type
-CS101,Computer Lab 1,CS Building,30,LAB
-CS102,Computer Lab 2,CS Building,30,LAB
-CS103,Programming Lab,CS Building,25,LAB
-A101,Lecture Hall A,Main Building,100,CLASSROOM
-A102,Lecture Hall B,Main Building,80,CLASSROOM
-A103,Classroom 1,Main Building,50,CLASSROOM
-A104,Classroom 2,Main Building,50,CLASSROOM
-A105,Classroom 3,Main Building,40,CLASSROOM
-B101,Math Lab,Math Building,35,LAB
-B102,Physics Lab,Physics Building,25,LAB
-B103,Chemistry Lab,Chemistry Building,30,LAB
-HALL1,Examination Hall 1,Exam Center,150,HALL
-HALL2,Examination Hall 2,Exam Center,120,HALL
-HALL3,Examination Hall 3,Exam Center,100,HALL
+C101,CSE Lecture Hall 1,Main Academic Block,120,CLASSROOM
+C202,CSE Lecture Hall 2,Main Academic Block,120,CLASSROOM
+C004,Tutorial Room 4,Main Academic Block,30,TUTORIAL
+E1304,EEE Lecture Hall 4,EEE Block,90,CLASSROOM
+L101,CSE Lab 1 (OS),Lab Wing,30,LAB
+L107,CSE Lab 7 (S/W Tools),Lab Wing,30,LAB
+L207,CSE Lab 7 (DAA),Lab Wing,30,LAB
+D202,ECE Lecture Hall 2,ECE Block,90,CLASSROOM
+D203,ECE Lecture Hall 3,ECE Block,90,CLASSROOM
+D303,ECE Lecture Hall 3,ECE Block,90,CLASSROOM

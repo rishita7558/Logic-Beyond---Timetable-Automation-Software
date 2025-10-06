@@ -1,0 +1,269 @@
+.timetable-generator {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.config-section, .subjects-section, .teachers-section, .classes-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.config-controls {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.config-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-weight: bold;
+}
+
+.config-controls input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100px;
+}
+
+.subject-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.subject-item input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 120px;
+}
+
+.teachers-list, .classes-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.teacher-item, .class-item {
+    background-color: #e3f2fd;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #2196f3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.generate-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 200px;
+}
+
+.generate-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.generate-btn:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+.add-btn {
+    background-color: #2196F3;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.add-btn:hover {
+    background-color: #1976D2;
+}
+
+.remove-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-btn:hover {
+    background-color: #d32f2f;
+}
+
+.remove-small-btn {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-small-btn:hover {
+    background-color: #ff4757;
+}
+
+.status-message {
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.status-message.generated {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-message.not.generated, 
+.status-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-message.generating {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.timetable-display {
+    margin-top: 30px;
+}
+
+.class-timetable {
+    margin-bottom: 40px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+}
+
+.timetable-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.timetable-table th,
+.timetable-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+.timetable-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+}
+
+.timetable-table .period-number {
+    background-color: #e8e8e8;
+    font-weight: bold;
+    width: 60px;
+}
+
+.timetable-slot {
+    min-width: 120px;
+    background-color: white;
+}
+
+.timetable-slot .subject-period {
+    padding: 8px;
+    background-color: #e8f5e8;
+    border-radius: 4px;
+    border-left: 4px solid #4CAF50;
+}
+
+.timetable-slot .free-period {
+    padding: 8px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border-radius: 4px;
+    font-style: italic;
+}
+
+.timetable-slot strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.teacher-name {
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
+}
+
+.generate-section {
+    text-align: center;
+    margin: 30px 0;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+h3 {
+    color: #444;
+    margin-bottom: 15px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .timetable-generator {
+        padding: 10px;
+    }
+    
+    .subject-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .subject-item input {
+        min-width: auto;
+    }
+    
+    .config-controls {
+        flex-direction: column;
+    }
+}
